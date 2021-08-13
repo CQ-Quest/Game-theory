@@ -1,5 +1,5 @@
 # Game-theory
-# Bash博弈引入  
+# Bash博弈(在一堆石子中取任意个)  
         A,B两个人，n个物品，每个人每次都可以取1 to m个物品，取走最后一个物品的人胜利。问先手A在什么条件下必胜。
         
         解析： Bash博弈先手必败的条件就是n%(m+1)==0,我们来分析一下这个情况。  
@@ -7,11 +7,7 @@
               手必败。如果n是m+1的倍数，其实也很简单的，因为无论先手一次拿多少个物品，后手总是可以做出这样的策略：拿的物品和先手加在一起恰
               好是m+1个，这样若干回合之后哦一定又会回到我们说的第一种情况，先手必败。所以结论得证。
               
-              
-              Code:
-              
-              #include<bits/stdc++.h>
-              using namespace std;
+             
               int main(){
                 int n,m,t;
                 cin>>t;
@@ -24,7 +20,7 @@
                 return 0;
               }
 
-# 尼姆博弈(Nimm Game)
+# Nim博弈(在n堆中的一堆石子中取任意个)
     博弈描述：有任意堆物品，每堆物品的个数是任意的，双方轮流从中取物品，每一次只能从一堆物品中取部分
               或全部物品，最少取一件，取到最后一件物品的人获胜。取完最后一个为胜！
             
@@ -41,13 +37,8 @@
 
                   也就是判断a xor b xor c 是否为0，如果为0，则先手必败，否则先手必胜
             
-            
-            Code:
-                  #include <cmath>
-                  #include <iostream>
-                  using namespace std;
-                  int main()
-                  {
+                  
+                   int main(){
                       int n,ans,temp;
                       while(cin>>n)
                       {
@@ -60,8 +51,71 @@
                           else cout<<"先手必胜"<<endl;
                       }
                       return 0;
-                  }
+                   }
 
 # 威佐夫博弈（Wythoff Game）
-# 斐波那契博弈
+    有两堆各若干个物品，两个人轮流从任一堆取至少一个或同时从两堆中取同样多的物品，规定每次至少取一个，多者不限，最后取光者得胜。
+    
+        void swap(int *a,int *b){
+                int temp=*a;
+                *a=*b;
+                *b=temp;
+        }
+        int main(){
+	int a,b;
+	while(~scanf("%d%d",&a,&b)&&a&&b){
+		if(a>b) swap(&a,&b);
+		int n=b-a;
+		double x=(sqrt(5.0)+1)/2;
+		int temp=(int)n*x;
+		if(temp==a) puts("0");  //先手必输 
+	       else puts("1");
+	}
+	return 0;
+        }
+        
 # SG函数
+    nim游戏的衍生变形，状态转移 AcWing取石子中的规律  最大操作数b=堆数+石子数-1
+    例如有一个有向无环图，在set集合{0，1}中，sg(u)为集合不存在的一个最小自然数，即为2
+    AcWing 1319移棋子游戏(sg模板)
+        #include<bits/stdc++.h>
+        using namespace std;
+        int n,m,k;  //点，边，棋子个数
+        const int N=2020,M=6010;
+        int h[N],e[M],ne[M],idx; //邻接表，下标 
+        int f[N]; //存储sg函数的值 
+        void add(int a,int b){
+                e[idx]=b,ne[idx]=h[a],h[a]=idx++;
+        } 
+        int sg(int u){
+                if(f[u]!=-1) return f[u];
+                set<int>S;
+                for(int i=h[u];i>=0;i=ne[i]){
+                        int j=e[i];
+                        S.insert(sg(j));
+                }
+                for(int i=0;; i++)
+                if(S.count(i)==0){
+                        f[u]=i;
+                        break;
+                }
+                return f[u];
+        }
+        int main(){
+                ios::sync_with_stdio(0);
+                cin>>n>>m>>k;
+                memset(h,-1,sizeof h);
+                memset(f,-1,sizeof f);
+                for(int i=0;i<m;i++) {
+                        int a,b;
+                        cin>>a>>b;
+                        add(a,b);
+                }
+                int ans=0;
+                for(int i=0;i<k;i++){
+                        int u;cin>>u;
+                        ans^=sg(u);
+                }
+                if(ans) puts("win");
+                else puts("lose");
+        } 
